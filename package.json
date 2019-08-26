@@ -1,8 +1,7 @@
 {
   "name": "node-login",
   "version": "1.7.0",
-  "description": "A template for quickly building login systems on top of Node.js & MongoDb",
-  "author": "Stephen Braitsch <stephen@braitsch.io>",
+  "description": "A tool that will elevate access for residents and stakeholders to give insight and input into city projects and programs and strengthens connectivity and awareness between groups in the city. >",
   "website": {
     "url": "https://nodejs-login.herokuapp.com"
   },
