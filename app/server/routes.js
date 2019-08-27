@@ -63,7 +63,7 @@ module.exports = function (app) {
 			res.render('home', {
 				title: 'Control Panel',
 				countries: CT,
-				accountTypes: AT,
+        accountTypes: AT,
 				udata: req.session.user
 			});
 		}
@@ -78,8 +78,10 @@ module.exports = function (app) {
 				name: req.body['name'],
 				email: req.body['email'],
 				pass: req.body['pass'],
-				country: req.body['country'],
+        country: req.body['country'],
 				accountType: req.body['accountType']
+=======
+				country: req.body['country']
 			}, function (e, o) {
 				if (e) {
 					res.status(400).send('error-updating-account');
@@ -96,7 +98,9 @@ module.exports = function (app) {
 	*/
 
 	app.get('/signup', function (req, res) {
+
 		res.render('signup', { title: 'Signup', countries: CT, accountTypes: AT });
+
 	});
 
 	app.post('/signup', function (req, res) {
@@ -106,7 +110,8 @@ module.exports = function (app) {
 			user: req.body['user'],
 			pass: req.body['pass'],
 			country: req.body['country'],
-			accountType: req.body['accountType']
+			accountType: req.body['accountType'],
+			city: req.body['city'],
 		}, function (e) {
 			if (e) {
 				res.status(400).send(e);
