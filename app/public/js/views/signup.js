@@ -23,7 +23,7 @@ $(document).ready(function() {
 
   $("#account-form h2").text("Signup");
   $("#account-form #sub").text(
-    "Please tell us a little about yourself or your organization"
+    "Please tell us a little about yourself or the organization"
   );
   $("#account-form-btn1").html("Cancel");
   $("#account-form-btn2").html("Submit");
