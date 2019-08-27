@@ -2,42 +2,43 @@
 var CT = require('./modules/country-list');
 var AM = require('./modules/account-manager');
 var EM = require('./modules/email-dispatcher');
+var AT = require('./modules/account-type-list');
 
-module.exports = function(app) {
+module.exports = function (app) {
 
-/*
-	login & logout
-*/
+	/*
+		login & logout
+	*/
 
-	app.get('/', function(req, res){
-	// check if the user has an auto login key saved in a cookie //
-		if (req.cookies.login == undefined){
+	app.get('/', function (req, res) {
+		// check if the user has an auto login key saved in a cookie //
+		if (req.cookies.login == undefined) {
 			res.render('login', { title: 'Hello - Please Login To Your Account' });
-		}	else{
-	// attempt automatic login //
-			AM.validateLoginKey(req.cookies.login, req.ip, function(e, o){
-				if (o){
-					AM.autoLogin(o.user, o.pass, function(o){
+		} else {
+			// attempt automatic login //
+			AM.validateLoginKey(req.cookies.login, req.ip, function (e, o) {
+				if (o) {
+					AM.autoLogin(o.user, o.pass, function (o) {
 						req.session.user = o;
 						res.redirect('/home');
 					});
-				}	else{
+				} else {
 					res.render('login', { title: 'Hello - Please Login To Your Account' });
 				}
 			});
 		}
 	});
-	
-	app.post('/', function(req, res){
-		AM.manualLogin(req.body['user'], req.body['pass'], function(e, o){
-			if (!o){
+
+	app.post('/', function (req, res) {
+		AM.manualLogin(req.body['user'], req.body['pass'], function (e, o) {
+			if (!o) {
 				res.status(400).send(e);
-			}	else{
+			} else {
 				req.session.user = o;
-				if (req.body['remember-me'] == 'false'){
+				if (req.body['remember-me'] == 'false') {
 					res.status(200).send(o);
-				}	else{
-					AM.generateLoginKey(o.user, req.ip, function(key){
+				} else {
+					AM.generateLoginKey(o.user, req.ip, function (key) {
 						res.cookie('login', key, { maxAge: 900000 });
 						res.status(200).send(o);
 					});
@@ -46,41 +47,43 @@ module.exports = function(app) {
 		});
 	});
 
-	app.post('/logout', function(req, res){
+	app.post('/logout', function (req, res) {
 		res.clearCookie('login');
-		req.session.destroy(function(e){ res.status(200).send('ok'); });
+		req.session.destroy(function (e) { res.status(200).send('ok'); });
 	})
-	
-/*
-	control panel
-*/
-	
-	app.get('/home', function(req, res) {
-		if (req.session.user == null){
+
+	/*
+		control panel
+	*/
+
+	app.get('/home', function (req, res) {
+		if (req.session.user == null) {
 			res.redirect('/');
-		}	else{
+		} else {
 			res.render('home', {
-				title : 'Control Panel',
-				countries : CT,
-				udata : req.session.user
+				title: 'Control Panel',
+				countries: CT,
+				accountTypes: AT,
+				udata: req.session.user
 			});
 		}
 	});
-	
-	app.post('/home', function(req, res){
-		if (req.session.user == null){
+
+	app.post('/home', function (req, res) {
+		if (req.session.user == null) {
 			res.redirect('/');
-		}	else{
+		} else {
 			AM.updateAccount({
-				id		: req.session.user._id,
-				name	: req.body['name'],
-				email	: req.body['email'],
-				pass	: req.body['pass'],
-				country	: req.body['country']
-			}, function(e, o){
-				if (e){
+				id: req.session.user._id,
+				name: req.body['name'],
+				email: req.body['email'],
+				pass: req.body['pass'],
+				country: req.body['country'],
+				accountType: req.body['accountType']
+			}, function (e, o) {
+				if (e) {
 					res.status(400).send('error-updating-account');
-				}	else{
+				} else {
 					req.session.user = o.value;
 					res.status(200).send('ok');
 				}
@@ -88,45 +91,46 @@ module.exports = function(app) {
 		}
 	});
 
-/*
-	new accounts
-*/
+	/*
+		new accounts
+	*/
 
-	app.get('/signup', function(req, res) {
-		res.render('signup', {  title: 'Signup', countries : CT });
+	app.get('/signup', function (req, res) {
+		res.render('signup', { title: 'Signup', countries: CT, accountTypes: AT });
 	});
-	
-	app.post('/signup', function(req, res){
+
+	app.post('/signup', function (req, res) {
 		AM.addNewAccount({
-			name 	: req.body['name'],
-			email 	: req.body['email'],
-			user 	: req.body['user'],
-			pass	: req.body['pass'],
-			country : req.body['country']
-		}, function(e){
-			if (e){
+			name: req.body['name'],
+			email: req.body['email'],
+			user: req.body['user'],
+			pass: req.body['pass'],
+			country: req.body['country'],
+			accountType: req.body['accountType']
+		}, function (e) {
+			if (e) {
 				res.status(400).send(e);
-			}	else{
+			} else {
 				res.status(200).send('ok');
 			}
 		});
 	});
 
-/*
-	password reset
-*/
+	/*
+		password reset
+	*/
 
-	app.post('/lost-password', function(req, res){
+	app.post('/lost-password', function (req, res) {
 		let email = req.body['email'];
-		AM.generatePasswordKey(email, req.ip, function(e, account){
-			if (e){
+		AM.generatePasswordKey(email, req.ip, function (e, account) {
+			if (e) {
 				res.status(400).send(e);
-			}	else{
-				EM.dispatchResetPasswordLink(account, function(e, m){
-			// TODO this callback takes a moment to return, add a loader to give user feedback //
-					if (!e){
+			} else {
+				EM.dispatchResetPasswordLink(account, function (e, m) {
+					// TODO this callback takes a moment to return, add a loader to give user feedback //
+					if (!e) {
 						res.status(200).send('ok');
-					}	else{
+					} else {
 						for (k in e) console.log('ERROR : ', k, e[k]);
 						res.status(400).send('unable to dispatch password reset');
 					}
@@ -135,58 +139,58 @@ module.exports = function(app) {
 		});
 	});
 
-	app.get('/reset-password', function(req, res) {
-		AM.validatePasswordKey(req.query['key'], req.ip, function(e, o){
-			if (e || o == null){
+	app.get('/reset-password', function (req, res) {
+		AM.validatePasswordKey(req.query['key'], req.ip, function (e, o) {
+			if (e || o == null) {
 				res.redirect('/');
-			} else{
+			} else {
 				req.session.passKey = req.query['key'];
-				res.render('reset', { title : 'Reset Password' });
+				res.render('reset', { title: 'Reset Password' });
 			}
 		})
 	});
-	
-	app.post('/reset-password', function(req, res) {
+
+	app.post('/reset-password', function (req, res) {
 		let newPass = req.body['pass'];
 		let passKey = req.session.passKey;
-	// destory the session immediately after retrieving the stored passkey //
+		// destory the session immediately after retrieving the stored passkey //
 		req.session.destroy();
-		AM.updatePassword(passKey, newPass, function(e, o){
-			if (o){
+		AM.updatePassword(passKey, newPass, function (e, o) {
+			if (o) {
 				res.status(200).send('ok');
-			}	else{
+			} else {
 				res.status(400).send('unable to update password');
 			}
 		})
 	});
-	
-/*
-	view, delete & reset accounts
-*/
-	
-	app.get('/print', function(req, res) {
-		AM.getAllRecords( function(e, accounts){
-			res.render('print', { title : 'Account List', accts : accounts });
+
+	/*
+		view, delete & reset accounts
+	*/
+
+	app.get('/print', function (req, res) {
+		AM.getAllRecords(function (e, accounts) {
+			res.render('print', { title: 'Account List', accts: accounts });
 		})
 	});
-	
-	app.post('/delete', function(req, res){
-		AM.deleteAccount(req.session.user._id, function(e, obj){
-			if (!e){
+
+	app.post('/delete', function (req, res) {
+		AM.deleteAccount(req.session.user._id, function (e, obj) {
+			if (!e) {
 				res.clearCookie('login');
-				req.session.destroy(function(e){ res.status(200).send('ok'); });
-			}	else{
+				req.session.destroy(function (e) { res.status(200).send('ok'); });
+			} else {
 				res.status(400).send('record not found');
 			}
 		});
 	});
-	
-	app.get('/reset', function(req, res) {
-		AM.deleteAllAccounts(function(){
+
+	app.get('/reset', function (req, res) {
+		AM.deleteAllAccounts(function () {
 			res.redirect('/print');
 		});
 	});
-	
-	app.get('*', function(req, res) { res.render('404', { title: 'Page Not Found'}); });
+
+	app.get('*', function (req, res) { res.render('404', { title: 'Page Not Found' }); });
 
 };
