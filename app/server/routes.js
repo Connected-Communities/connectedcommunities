@@ -2,6 +2,7 @@
 var CT = require('./modules/country-list');
 var AM = require('./modules/account-manager');
 var EM = require('./modules/email-dispatcher');
+var AT = require('./modules/account-type-list');
 
 module.exports = function (app) {
 
@@ -62,6 +63,7 @@ module.exports = function (app) {
 			res.render('home', {
 				title: 'Control Panel',
 				countries: CT,
+        accountTypes: AT,
 				udata: req.session.user
 			});
 		}
@@ -76,6 +78,9 @@ module.exports = function (app) {
 				name: req.body['name'],
 				email: req.body['email'],
 				pass: req.body['pass'],
+        country: req.body['country'],
+				accountType: req.body['accountType']
+=======
 				country: req.body['country']
 			}, function (e, o) {
 				if (e) {
@@ -93,7 +98,9 @@ module.exports = function (app) {
 	*/
 
 	app.get('/signup', function (req, res) {
-		res.render('signup', { title: 'Signup', countries: CT });
+
+		res.render('signup', { title: 'Signup', countries: CT, accountTypes: AT });
+
 	});
 
 	app.post('/signup', function (req, res) {
@@ -103,8 +110,8 @@ module.exports = function (app) {
 			user: req.body['user'],
 			pass: req.body['pass'],
 			country: req.body['country'],
+			accountType: req.body['accountType'],
 			city: req.body['city'],
-
 		}, function (e) {
 			if (e) {
 				res.status(400).send(e);

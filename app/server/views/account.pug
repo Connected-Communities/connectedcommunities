@@ -25,13 +25,18 @@ input(type='hidden', value= user._id)#userId
 				select.custom-select#country-list(name='country')
 					each item in countries
 						option(selected=item.name == user.country)= item.name
-		
+
+		.form-group.row.margin-zero
+			label.col-sm-3.col-form-label.col-form-label-sm Account Type
+			.col-sm-9
+				select.custom-select#account-type-list(name='accountType')
+					each item in accountTypes
+						option(selected=item.name == user.accountType)= item.name
 			.form-group.row
 			label.col-sm-3.col-form-label.col-form-label-sm City
 			.col-sm-9
 				input.form-control#email-tf(type='city', name='city', value= user.city)
 
-	 
 		hr
 		
 		.form-group.row
