@@ -20,12 +20,20 @@ input(type='hidden', value= user._id)#userId
 				input.form-control#email-tf(type='email', name='email', value= user.email)
 
 		.form-group.row.margin-zero
-			label.col-sm-3.col-form-label.col-form-label-sm Location
+			label.col-sm-3.col-form-label.col-form-label-sm Country
 			.col-sm-9
 				select.custom-select#country-list(name='country')
 					each item in countries
 						option(selected=item.name == user.country)= item.name
+		
+		
+		.form-group.row
+			label.col-sm-3.col-form-label.col-form-label-sm City
+			.col-sm-9
+				input.form-control#email-tf(type='city', name='city', value= user.city)
+
 		hr
+		
 		.form-group.row
 			label.col-sm-3.col-form-label.col-form-label-sm Username
 			.col-sm-9
