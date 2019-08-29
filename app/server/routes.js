@@ -3,20 +3,20 @@ var AM = require("./modules/account-manager");
 var EM = require("./modules/email-dispatcher");
 var AT = require("./modules/account-type-list");
 
-module.exports = function(app) {
+module.exports = function (app) {
   /*
 		login & logout
 	*/
 
-  app.get("/", function(req, res) {
+  app.get("/", function (req, res) {
     // check if the user has an auto login key saved in a cookie //
     if (req.cookies.login == undefined) {
       res.render("login", { title: "Hello - Please Login To Your Account" });
     } else {
       // attempt automatic login //
-      AM.validateLoginKey(req.cookies.login, req.ip, function(e, o) {
+      AM.validateLoginKey(req.cookies.login, req.ip, function (e, o) {
         if (o) {
-          AM.autoLogin(o.user, o.pass, function(o) {
+          AM.autoLogin(o.user, o.pass, function (o) {
             req.session.user = o;
             res.redirect("/home");
           });
@@ -29,8 +29,8 @@ module.exports = function(app) {
     }
   });
 
-  app.post("/", function(req, res) {
-    AM.manualLogin(req.body["user"], req.body["pass"], function(e, o) {
+  app.post("/", function (req, res) {
+    AM.manualLogin(req.body["user"], req.body["pass"], function (e, o) {
       if (!o) {
         res.status(400).send(e);
       } else {
@@ -38,7 +38,7 @@ module.exports = function(app) {
         if (req.body["remember-me"] == "false") {
           res.status(200).send(o);
         } else {
-          AM.generateLoginKey(o.user, req.ip, function(key) {
+          AM.generateLoginKey(o.user, req.ip, function (key) {
             res.cookie("login", key, { maxAge: 900000 });
             res.status(200).send(o);
           });
@@ -47,9 +47,9 @@ module.exports = function(app) {
     });
   });
 
-  app.post("/logout", function(req, res) {
+  app.post("/logout", function (req, res) {
     res.clearCookie("login");
-    req.session.destroy(function(e) {
+    req.session.destroy(function (e) {
       res.status(200).send("ok");
     });
   });
@@ -58,7 +58,7 @@ module.exports = function(app) {
 		control panel
 	*/
 
-  app.get("/home", function(req, res) {
+  app.get("/home", function (req, res) {
     if (req.session.user == null) {
       res.redirect("/");
     } else {
@@ -71,7 +71,7 @@ module.exports = function(app) {
     }
   });
 
-  app.post("/home", function(req, res) {
+  app.post("/home", function (req, res) {
     if (req.session.user == null) {
       res.redirect("/");
     } else {
@@ -84,7 +84,7 @@ module.exports = function(app) {
           country: req.body["country"],
           accountType: req.body["accountType"]
         },
-        function(e, o) {
+        function (e, o) {
           if (e) {
             res.status(400).send("error-updating-account");
           } else {
@@ -100,11 +100,11 @@ module.exports = function(app) {
 		new accounts
 	*/
 
-  app.get("/signup", function(req, res) {
+  app.get("/signup", function (req, res) {
     res.render("signup", { title: "Signup", countries: CT, accountTypes: AT });
   });
 
-  app.post("/signup", function(req, res) {
+  app.post("/signup", function (req, res) {
     AM.addNewAccount(
       {
         name: req.body["name"],
@@ -115,7 +115,7 @@ module.exports = function(app) {
         accountType: req.body["accountType"],
         city: req.body["city"]
       },
-      function(e) {
+      function (e) {
         if (e) {
           res.status(400).send(e);
         } else {
@@ -129,13 +129,13 @@ module.exports = function(app) {
 		password reset
 	*/
 
-  app.post("/lost-password", function(req, res) {
+  app.post("/lost-password", function (req, res) {
     let email = req.body["email"];
-    AM.generatePasswordKey(email, req.ip, function(e, account) {
+    AM.generatePasswordKey(email, req.ip, function (e, account) {
       if (e) {
         res.status(400).send(e);
       } else {
-        EM.dispatchResetPasswordLink(account, function(e, m) {
+        EM.dispatchResetPasswordLink(account, function (e, m) {
           // TODO this callback takes a moment to return, add a loader to give user feedback //
           if (!e) {
             res.status(200).send("ok");
@@ -148,8 +148,8 @@ module.exports = function(app) {
     });
   });
 
-  app.get("/reset-password", function(req, res) {
-    AM.validatePasswordKey(req.query["key"], req.ip, function(e, o) {
+  app.get("/reset-password", function (req, res) {
+    AM.validatePasswordKey(req.query["key"], req.ip, function (e, o) {
       if (e || o == null) {
         res.redirect("/");
       } else {
@@ -159,12 +159,12 @@ module.exports = function(app) {
     });
   });
 
-  app.post("/reset-password", function(req, res) {
+  app.post("/reset-password", function (req, res) {
     let newPass = req.body["pass"];
     let passKey = req.session.passKey;
     // destory the session immediately after retrieving the stored passkey //
     req.session.destroy();
-    AM.updatePassword(passKey, newPass, function(e, o) {
+    AM.updatePassword(passKey, newPass, function (e, o) {
       if (o) {
         res.status(200).send("ok");
       } else {
@@ -177,17 +177,17 @@ module.exports = function(app) {
 		view, delete & reset accounts
 	*/
 
-  app.get("/print", function(req, res) {
-    AM.getAllRecords(function(e, accounts) {
+  app.get("/print", function (req, res) {
+    AM.getAllRecords(function (e, accounts) {
       res.render("print", { title: "Account List", accts: accounts });
     });
   });
 
-  app.post("/delete", function(req, res) {
-    AM.deleteAccount(req.session.user._id, function(e, obj) {
+  app.post("/delete", function (req, res) {
+    AM.deleteAccount(req.session.user._id, function (e, obj) {
       if (!e) {
         res.clearCookie("login");
-        req.session.destroy(function(e) {
+        req.session.destroy(function (e) {
           res.status(200).send("ok");
         });
       } else {
@@ -196,13 +196,56 @@ module.exports = function(app) {
     });
   });
 
-  app.get("/reset", function(req, res) {
-    AM.deleteAllAccounts(function() {
+  app.get("/reset", function (req, res) {
+    AM.deleteAllAccounts(function () {
       res.redirect("/print");
     });
   });
 
-  app.get("*", function(req, res) {
+  /*
+  Upload files (csv for now)
+
+  */
+
+  app.get("/home/doc-upload", function (req, res) {
+    if (req.session.user == null) {
+      res.redirect("/");
+    } else {
+      res.render("documents", { title: "Upload your files here" })
+    }
+  })
+
+  app.post("/home/doc-upload", function (req, res) {
+    if (req.session.user == null) {
+      res.redirect("/");
+    } else {
+      //Function doesnt exist yet
+      AM.uploadFile(
+        {
+          name: req.body["name"],
+          email: req.body["email"],
+          user: req.body["user"],
+          pass: req.body["pass"],
+          country: req.body["country"],
+          accountType: req.body["accountType"],
+          city: req.body["city"]
+        },
+        function (e) {
+          if (e) {
+            res.status(400).send(e);
+          } else {
+            res.status(200).send("ok");
+          }
+        }
+      );
+    }
+  })
+
+
+
+  /////////////////////////////////////
+
+  app.get("*", function (req, res) {
     res.render("404", { title: "Page Not Found" });
   });
 };
