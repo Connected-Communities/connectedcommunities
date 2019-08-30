@@ -1,63 +1,83 @@
 
-function HomeController()
-{
-// bind event listeners to button clicks //
+function HomeController() {
+	// bind event listeners to button clicks //
 	var that = this;
 
-// handle user logout //
-	$('#btn-logout').click(function(){ that.attemptLogout(); });
+	// handle user logout //
+	$('#btn-logout').click(function () { that.attemptLogout(); });
+	//handle user upload data
+	$('#btn-upload').click(function () { that.attemptUpload(); });
 
-// confirm account deletion //
-	$('#account-form-btn1').click(function(){$('.modal-confirm').modal('show')});
+	// confirm account deletion //
+	$('#account-form-btn1').click(function () { $('.modal-confirm').modal('show') });
 
-// handle account deletion //
-	$('.modal-confirm .submit').click(function(){ that.deleteAccount(); });
+	// handle account deletion //
+	$('.modal-confirm .submit').click(function () { that.deleteAccount(); });
 
-	this.deleteAccount = function()
-	{
+	this.deleteAccount = function () {
 		$('.modal-confirm').modal('hide');
 		var that = this;
 		$.ajax({
 			url: '/delete',
 			type: 'POST',
-			success: function(data){
-	 			that.showLockedAlert('Your account has been deleted.<br>Redirecting you back to the homepage.');
+			success: function (data) {
+				that.showLockedAlert('Your account has been deleted.<br>Redirecting you back to the homepage.');
 			},
-			error: function(jqXHR){
-				console.log(jqXHR.responseText+' :: '+jqXHR.statusText);
+			error: function (jqXHR) {
+				console.log(jqXHR.responseText + ' :: ' + jqXHR.statusText);
 			}
 		});
 	}
 
-	this.attemptLogout = function()
-	{
+	this.attemptLogout = function () {
 		var that = this;
 		$.ajax({
 			url: '/logout',
 			type: 'POST',
-			data: {logout : true},
-			success: function(data){
-	 			that.showLockedAlert('You are now logged out.<br>Redirecting you back to the homepage.');
+			data: { logout: true },
+			success: function (data) {
+				that.showLockedAlert('You are now logged out.<br>Redirecting you back to the homepage.');
 			},
-			error: function(jqXHR){
-				console.log(jqXHR.responseText+' :: '+jqXHR.statusText);
+			error: function (jqXHR) {
+				console.log(jqXHR.responseText + ' :: ' + jqXHR.statusText);
+			}
+		});
+	}
+	this.attemptUpload = function () {
+		var that = this;
+		$.ajax({
+			url: '/home/doc-upload',
+			type: 'GET',
+			success: function (data) {
+				that.goUpload('redirecting you to upload file');
+			},
+			error: function (jqXHR) {
+				console.log(jqXHR.responseText + ' :: ' + jqXHR.statusText);
 			}
 		});
 	}
 
-	this.showLockedAlert = function(msg){
-		$('.modal-alert').modal({ show : false, keyboard : false, backdrop : 'static' });
+	this.goUpload = function (msg) {
+		$('.modal-alert').modal({ show: false, keyboard: false, backdrop: 'static' });
 		$('.modal-alert .modal-header h4').text('Success!');
 		$('.modal-alert .modal-body p').html(msg);
 		$('.modal-alert').modal('show');
-		$('.modal-alert button').click(function(){window.location.href = '/';})
-		setTimeout(function(){window.location.href = '/';}, 3000);
+		$('.modal-alert button').click(function () { window.location.href = '/home/doc-upload'; })
+		setTimeout(function () { window.location.href = '/home/doc-upload'; }, 2000);
+	}
+
+	this.showLockedAlert = function (msg) {
+		$('.modal-alert').modal({ show: false, keyboard: false, backdrop: 'static' });
+		$('.modal-alert .modal-header h4').text('Success!');
+		$('.modal-alert .modal-body p').html(msg);
+		$('.modal-alert').modal('show');
+		$('.modal-alert button').click(function () { window.location.href = '/'; })
+		setTimeout(function () { window.location.href = '/'; }, 3000);
 	}
 }
 
-HomeController.prototype.onUpdateSuccess = function()
-{
-	$('.modal-alert').modal({ show : false, keyboard : true, backdrop : true });
+HomeController.prototype.onUpdateSuccess = function () {
+	$('.modal-alert').modal({ show: false, keyboard: true, backdrop: true });
 	$('.modal-alert .modal-header h4').text('Success!');
 	$('.modal-alert .modal-body p').html('Your account has been updated.');
 	$('.modal-alert').modal('show');
