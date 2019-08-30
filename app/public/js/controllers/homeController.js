@@ -49,21 +49,21 @@ function HomeController() {
 			url: '/home/doc-upload',
 			type: 'GET',
 			success: function (data) {
-				that.goUpload('redirecting you to upload file');
+				that.goUpload();
 			},
 			error: function (jqXHR) {
 				console.log(jqXHR.responseText + ' :: ' + jqXHR.statusText);
 			}
 		});
 	}
-
+	//upload funtion redirect to document.pug
 	this.goUpload = function (msg) {
-		$('.modal-alert').modal({ show: false, keyboard: false, backdrop: 'static' });
-		$('.modal-alert .modal-header h4').text('Success!');
-		$('.modal-alert .modal-body p').html(msg);
-		$('.modal-alert').modal('show');
+		//$('.modal-alert').modal({ show: false, keyboard: false, backdrop: 'static' });
+		//$('.modal-alert .modal-header h4').text('Success!');
+		//$('.modal-alert .modal-body p').html(msg);
+		//$('.modal-alert').modal('show');
 		$('.modal-alert button').click(function () { window.location.href = '/home/doc-upload'; })
-		setTimeout(function () { window.location.href = '/home/doc-upload'; }, 2000);
+		setTimeout(function () { window.location.href = '/home/doc-upload'; }, 0);
 	}
 
 	this.showLockedAlert = function (msg) {
