@@ -217,31 +217,23 @@ module.exports = function (app) {
     }
   })
 
-  app.post("/home/doc-upload", function (req, res) {
-    if (req.session.user == null) {
-      res.redirect("/");
-    } else {
-      FM.uploadFile(
-        {
-          name: req.body["name"],
-          email: req.body["email"],
-          user: req.body["user"],
-          pass: req.body["pass"],
-          country: req.body["country"],
-          accountType: req.body["accountType"],
-          city: req.body["city"]
-        },
-        function (e) {
-          if (e) {
-            res.status(400).send(e);
-          } else {
-            res.status(200).send("ok");
-          }
-        }
-      );
-    }
-  }
-  )
+  //app.post("/home/doc-upload", function (req, res) {
+  //  if (req.session.user == null) {
+  //    res.redirect("/");
+  //  } else {
+  //    FM.uploadFile(
+  //      req.body('something'),
+  //      function (e) {
+  //        if (e) {
+  //          res.status(400).send(e);
+  //        } else {
+  //          res.status(200).send("ok");
+  //        }
+  //      }
+  //    );
+  //  }
+  //}
+  //)
 
 
 
