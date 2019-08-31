@@ -206,6 +206,7 @@ module.exports = function (app) {
   /*
   Upload files (csv for now)
 
+
   */
 
   app.get("/home/doc-upload", function (req, res) {
@@ -234,10 +235,19 @@ module.exports = function (app) {
   //  }
   //}
   //)
+  app.post("/home/doc-upload/uploader", function (req, res) {
+    if (req.session.user == null) {
+      res.redirect("/");
+    } else {
+      res.render("uploadSucceeded", { title: "Upload Succeeded" })
+
+    }
+  })
 
 
 
   /////////////////////////////////////
+
 
   app.get("*", function (req, res) {
     res.render("404", { title: "Page Not Found" });
