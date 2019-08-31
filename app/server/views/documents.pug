@@ -1,5 +1,9 @@
-
-extends layout
-
-block content
-	#four04 Welcome to Documents! 
+doctype html
+| Upload your CSV file here
+head
+  title Upload
+  script(type='text/javascript').
+    if (foo) bar(1 + 5)
+form(action='/action_page.php')
+  input#txtFileUpload(type='file' name='File Upload' accept='.csv')
+  input(type='submit')
