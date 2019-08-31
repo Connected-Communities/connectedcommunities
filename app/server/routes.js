@@ -2,6 +2,7 @@ var CT = require("./modules/country-list");
 var AM = require("./modules/account-manager");
 var EM = require("./modules/email-dispatcher");
 var AT = require("./modules/account-type-list");
+var FM = require("./modules/files-manager");
 
 module.exports = function (app) {
   /*
@@ -220,17 +221,8 @@ module.exports = function (app) {
   //  if (req.session.user == null) {
   //    res.redirect("/");
   //  } else {
-  //    //Function doesnt exist yet
-  //    AM.uploadFile(
-  //      {
-  //        name: req.body["name"],
-  //        email: req.body["email"],
-  //        user: req.body["user"],
-  //        pass: req.body["pass"],
-  //        country: req.body["country"],
-  //        accountType: req.body["accountType"],
-  //        city: req.body["city"]
-  //      },
+  //    FM.uploadFile(
+  //      req.body('something'),
   //      function (e) {
   //        if (e) {
   //          res.status(400).send(e);
