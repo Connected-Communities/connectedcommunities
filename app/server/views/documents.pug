@@ -2,8 +2,7 @@ doctype html
 | Upload your CSV file here
 head
   title Upload
-  script(type='text/javascript').
-    if (foo) bar(1 + 5)
-form(action='/action_page.php')
-  input#txtFileUpload(type='file' name='File Upload' accept='.csv')
+  
+form(method='post', enctype='multipart/form-data',action='/home/doc-upload/uploader')
+  input#txtFileUpload(type='file' name='fileupload' accept='.csv')
   input(type='submit')

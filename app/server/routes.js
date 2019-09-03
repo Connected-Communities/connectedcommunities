@@ -4,6 +4,7 @@ var EM = require("./modules/email-dispatcher");
 var AT = require("./modules/account-type-list");
 var FM = require("./modules/files-manager");
 
+
 module.exports = function (app) {
   /*
 		login & logout
@@ -206,6 +207,7 @@ module.exports = function (app) {
   /*
   Upload files (csv for now)
 
+
   */
 
   app.get("/home/doc-upload", function (req, res) {
@@ -234,10 +236,38 @@ module.exports = function (app) {
   //  }
   //}
   //)
+  //app.post("/home/doc-upload/uploader", function (req, res) {
+  //  if (req.session.user == null) {
+  //    res.redirect("/");
+  //  } else {
+  //    res.render("uploadSucceeded", { title: "Upload Succeeded" })
+  //
+  //  }
+  //})
 
 
+  //multer object creation
+  var multer = require('multer')
+  var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, './')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname)
+    }
+  })
+
+  var upload = multer({ storage: storage })
+
+  app.post('/home/doc-upload/uploader', upload.single('fileupload'), function (req, res) {
+    //res.send("File upload sucessfully.");
+    //refernces the file that was uploaded
+    console.log(req.file)
+    res.send(req.file.filename + " has been uploaded successfully.")
+  });
 
   /////////////////////////////////////
+
 
   app.get("*", function (req, res) {
     res.render("404", { title: "Page Not Found" });
