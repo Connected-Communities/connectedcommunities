@@ -1,5 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
-const accountManager = require('.account-manager')
+const accountManager = require('./account-manager')
 
 var db, filesUploaded;
 MongoClient.connect(process.env.DB_URL, { useNewUrlParser: true }, function (e, client) {
