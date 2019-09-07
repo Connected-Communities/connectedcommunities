@@ -20,8 +20,11 @@ package-lock.json
 Git Hub
 
 Step 1: Sign up/access Git Hub account
+
 Step 2: Terminal command line: git clone https://github.com/BAL27772/connected-communities.git
+
 Step 3: Open in code editor with project directory 
+
 Step 4: npm install in command line
 
 
